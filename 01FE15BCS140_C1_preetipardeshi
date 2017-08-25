@@ -1,1 +1,73 @@
+import tensorflow as tf
+import matplotlib.pyplot as plt
 
+x=tf.constant([8.34,19.31,34.32,42.55],name='a')
+y=tf.constant([8.34,19.31,34.32,42.55],name='b')
+z=tf.constant(1.0)
+eqn=tf.constant("y=mx+c")
+
+pred=tf.constant("Predicted values =")
+meanx = tf.constant("Mean of x =")
+meany = tf.constant("Mean of y =")
+variance = tf.constant("Variance of x =")
+covariance = tf.constant("Covariance of x and y =")
+
+m_val=tf.constant("Value of m = ")
+c_val=tf.constant("Value of c = ")
+
+
+# Mean of x and y
+mean_x = tf.reduce_mean(x)
+mean_y = tf.reduce_mean(y)
+
+   
+# x-Mean , y-Mean
+vx=tf.Variable(x-mean_x, name='var_x')
+vy=tf.Variable(y-mean_y, name='var_y')
+l=tf.size(x)
+n=tf.subtract(l,1)
+n=tf.cast(n,tf.float32)
+#(x-mean)sq and sum
+vs=tf.square(vx)
+sn=tf.reduce_sum(vs)
+sm=tf.div(sn,n)
+
+   
+#Covariance of x and y
+cov=tf.multiply(vx,vy)
+cm=tf.reduce_sum(cov)
+cv=tf.div(cm,n)
+
+
+#Calculation of m and c
+m=tf.divide(cv,sm)
+c=mean_y-(mean_x*m)
+
+#Predicted values of Y
+p=tf.multiply(x,m)
+pry=tf.add(p,c)    
+
+
+#calculating root-mean-square-error
+rms=tf.sqrt(tf.reduce_mean(tf.squared_difference(y,pry)))
+   
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+ 
+print(sess.run(eqn))
+print(sess.run(meanx),sess.run(mean_x))
+print(sess.run(meany),sess.run(mean_y))
+
+print(sess.run(variance),sess.run(sm))
+print(sess.run(covariance),sess.run(cv))
+
+print(sess.run(m_val),sess.run(m))
+print(sess.run(c_val),sess.run(c))
+
+print(sess.run(pred),sess.run(pry))
+print(sess.run(rms))
+
+plt.plot(sess.run(y),sess.run(pry),label='Actual-Predicted')
+plt.legend()
+plt.show()
