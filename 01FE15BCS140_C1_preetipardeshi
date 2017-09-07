@@ -71,3 +71,43 @@ print(sess.run(rms))
 plt.plot(sess.run(y),sess.run(pry),label='Actual-Predicted')
 plt.legend()
 plt.show()
+
+----------------------------------------------------------------------------------
+#Lab2 assignment 2
+import tensorflow as tf
+import numpy as np
+def tf_train(X_train,y_train, batch_size=20,learning_rate=0.5):
+    
+    # tf Graph Input
+    x = tf.placeholder(tf.float32, [None, 1]) # mnist data image of shape 28*28=784
+    y_ = tf.placeholder(tf.float32, [None, 1]) # 0-9 digits recognition => 10 classes
+
+# Set model weights
+    W = tf.Variable(tf.random_normal([1,1],stddev=0.1))
+    b = tf.Variable(tf.zeros([10]))
+    a = tf.sigmoid(tf.matmul(x,W))
+    
+# Construct model
+    pred = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax
+    #cost = tf.reduce_mean(-(y_*tf.log(a)+(1-y_)*tf.log(1-a)))
+    #train_step = tf.train.GradientDescentOptimizer(1e-2).minimize(cost)
+# Minimize error using cross entropy
+    cost = tf.reduce_mean(-tf.reduce_sum(y*tf.log(pred), reduction_indices=1))
+# Gradient Descent
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+    sess = tf.InteractiveSession()
+    tf.initialize_all_variables().run()
+# Initializing the variables
+    #init = tf.global_variables_initializer()
+    
+    for epoch in range(1000):
+        idx = np.random.choice(int(X_train,batch_size)
+        #_, l = sess.run([train_step,cost],feed_dict={x:X_train[idx], y_:y_train[idx]})
+         _, l = sess.run([train_step, cost], feed_dict={x:X_train[idx], y_:y_train[idx]})
+        
+        if epoch%100 == 0:
+            print("Loss: "+str(l))
+            
+X=[2.7810836,1.465489372,3.396561688,1.38807019,3.06407232,7.627531214,5.332441248,6.922596716,8.675418651,7.673756466]
+y=[2.550537003,2.362125076,4.400293529,1.850220317,3.005305973,2.759262235,2.088626775,1.77106367,-0.2420686551,3.508563011]
+tf_train(X,y)
