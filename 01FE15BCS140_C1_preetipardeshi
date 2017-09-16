@@ -111,3 +111,68 @@ def tf_train(X_train,y_train, batch_size=20,learning_rate=0.5):
 X=[2.7810836,1.465489372,3.396561688,1.38807019,3.06407232,7.627531214,5.332441248,6.922596716,8.675418651,7.673756466]
 y=[2.550537003,2.362125076,4.400293529,1.850220317,3.005305973,2.759262235,2.088626775,1.77106367,-0.2420686551,3.508563011]
 tf_train(X,y)
+
+---------------------------------------------------------------------------------------------------------------------
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+
+#Learning rate=.3
+x1=tf.constant([1.0,2.0,3.0,4.0,5.0],name='f')
+x2=tf.constant([3.0,1.0,2.0,4.0,5.0],name='s')
+x1 = tf.cast(x1,dtype=tf.float32)
+x2 =tf.cast(x2,dtype=tf.float32)
+
+y=tf.constant([0,1,0,0,0],name='o')
+
+epoch=tf.constant(100)
+z=tf.constant([20.0,40.0,60.0,80.0,100.0])
+lr=0.3
+k=0
+l=0
+tO=0.0
+t1=0.0
+t2=0.0
+tn0=0.0
+yhat=0.0
+T=epoch/20
+i=0
+model=tf.global_variables_initializer()
+yhat=1.0/(1.0+tf.exp(-tO-(t1*x1[i])-(t2*x2[i])))
+yhat = tf.cast(yhat,dtype=tf.float32)
+y = tf.cast(y,dtype=tf.float32)
+            #error = y[i] - yhat
+s0 = tf.reduce_sum(tf.multiply(tf.subtract(yhat,y),x))
+tn0 = tf.subtract(t0,tf.multiply(lr,s0))
+        
+with tf.Session()as sess:
+    sess.run(model)
+    #output=tf.TensorArray(size=tf.cast(T,tf.int32),dtype=tf.float32)
+    #theta=tf.TensorArray(size=3,dtype=tf.float32)
+    for j in range(sess.run(epoch)):
+        sum_err=0
+        for i in range(sess.run(tf.size(x1))):
+            yhat=1.0/(1.0+tf.exp(-tO-(t1*x1[i])-(t2*x2[i])))
+            yhat = tf.cast(yhat,dtype=tf.float32)
+            #error = y[i] - yhat
+            #sum_err=sum_err+tf.square(error)
+            t0=tn0
+            s0 = tf.reduce_sum(tf.multiply(tf.subtract(yhat,y),x))
+            tn0 = tf.subtract(t0,tf.multiply(lr,s0))           
+            i=i+1
+           # theta=theta.write(l*2,t2)
+        if(j+1)%20==0:
+            print("epoch value:",(j+1))
+            print("theta0:",sess.run(tn0))
+           # print("theta1:",sess.run(t1))
+            #print("theta2:",sess.run(t2))
+            #print("error: ",sess.run(sum_err))
+            output=output.write(k,yhat)
+            k=k+1
+    output_final=output.stack()
+    
+    a=sess.run(output_final)
+    plt.plot(sess.run(z),a,label='epoch-cost')
+    plt.legend()
+    plt.show()
+
